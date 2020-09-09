@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const memberSchema = new Schema({
     fullname: {
         type: String,
         required: true,
@@ -34,7 +34,7 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    deposit: {
+    balance: {
         type: Number,
         default: 0,
     },
@@ -57,6 +57,6 @@ const userSchema = new Schema({
     },
 });
 
-const Member = mongoose.model("members", userSchema);
+const Member = mongoose.model("members", memberSchema);
 
 module.exports = Member;
