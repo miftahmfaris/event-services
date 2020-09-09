@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { Member } = require("../../models");
 const { hash, compare } = require("../../helpers");
 const { createToken } = require("../../helpers");
 
@@ -8,7 +8,9 @@ module.exports = {
     getUser: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await User.find({ status: { $ne: "PENDING" } });
+                const result = await Member.find({
+                    status: { $ne: "PENDING" },
+                });
 
                 res.send({ message: "Get All datas users", data: result });
             } else {
@@ -23,7 +25,7 @@ module.exports = {
         const { search } = req.params;
 
         try {
-            const result = await User.find({
+            const result = await Member.find({
                 $or: [
                     { fullname: { $regex: search, $options: "i" } },
                     { address: { $regex: search, $options: "i" } },
@@ -43,7 +45,7 @@ module.exports = {
         const { id } = req.params;
 
         try {
-            const result = await User.findById(id);
+            const result = await Member.findById(id);
 
             if (result) {
                 res.send({ result: result });
@@ -60,7 +62,7 @@ module.exports = {
         const hashed = await hash(password);
 
         try {
-            const checkEmail = await User.findOne({
+            const checkEmail = await Member.findOne({
                 email,
             }).exec();
             if (checkEmail) {
@@ -68,7 +70,7 @@ module.exports = {
                     message: `Email ${email} has been registered`,
                 });
             } else {
-                const result = await User.create({
+                const result = await Member.create({
                     ...req.body,
                     password: hashed,
                 });
@@ -95,7 +97,7 @@ module.exports = {
                 req.body.approvedBy = req.token.email;
             }
 
-            const results = await User.findByIdAndUpdate(id, {
+            const results = await Member.findByIdAndUpdate(id, {
                 $set: {
                     ...req.body,
                 },
@@ -115,7 +117,7 @@ module.exports = {
 
         try {
             if (req.token.isAdmin) {
-                const results = await User.deleteOne({
+                const results = await Member.deleteOne({
                     _id: id,
                 });
                 res.send({
@@ -134,7 +136,7 @@ module.exports = {
         try {
             const { password, email } = req.body;
 
-            const registeredUser = await User.findOne({
+            const registeredUser = await Member.findOne({
                 $or: [{ email }],
             });
 
@@ -149,6 +151,7 @@ module.exports = {
                         fullname: registeredUser.fullname,
                         email: registeredUser.email,
                         status: registeredUser.status,
+                        isAdmin: registeredUser.isAdmin,
                     });
 
                     res.send({
@@ -178,7 +181,7 @@ module.exports = {
     approval: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await User.find({ status: "PENDING" });
+                const result = await Member.find({ status: "PENDING" });
 
                 res.send({ message: "Get All datas users", data: result });
             } else {

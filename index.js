@@ -12,8 +12,7 @@ app.get("/", (req, res) => {
     res.send("Welcome to Rest API");
 });
 
-app.use("/admin", require("./routes/admin"));
-app.use("/users", require("./routes/client"));
+app.use("/members", require("./routes/member"));
 
 app.get("*", (req, res) => {
     res.send("404 Page Not Found");

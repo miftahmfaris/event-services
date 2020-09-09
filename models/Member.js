@@ -21,7 +21,6 @@ const userSchema = new Schema({
     },
     address: {
         type: String,
-        required: true,
     },
     avatar: {
         type: String,
@@ -30,6 +29,14 @@ const userSchema = new Schema({
     status: {
         type: String,
         default: "PENDING",
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    deposit: {
+        type: Number,
+        default: 0,
     },
     createdBy: {
         type: String,
@@ -50,6 +57,6 @@ const userSchema = new Schema({
     },
 });
 
-const User = mongoose.model("users", userSchema);
+const Member = mongoose.model("members", userSchema);
 
-module.exports = User;
+module.exports = Member;

@@ -1,9 +1,5 @@
-const User = require("./User");
-const Admin = require("./Admin");
-const House = require("./House");
+const Member = require("./Member");
 
 module.exports = {
-    Admin,
-    User,
-    House,
+    Member,
 };
