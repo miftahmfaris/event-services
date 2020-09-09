@@ -1,12 +1,10 @@
-const { Member } = require("../../models");
-const { hash, compare } = require("../../helpers");
-const { createToken } = require("../../helpers");
+const { Order } = require("../../models");
 
 module.exports = {
-    getUser: async (req, res) => {
+    getOrder: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Member.find({
+                const result = await Order.find({
                     status: { $ne: "PENDING" },
                 });
 
@@ -19,11 +17,11 @@ module.exports = {
         }
     },
 
-    getUserName: async (req, res) => {
+    getOrderName: async (req, res) => {
         const { search } = req.params;
 
         try {
-            const result = await Member.find({
+            const result = await Order.find({
                 $or: [
                     { fullname: { $regex: search, $options: "i" } },
                     { address: { $regex: search, $options: "i" } },
@@ -39,11 +37,11 @@ module.exports = {
         }
     },
 
-    getUserId: async (req, res) => {
+    getOrderId: async (req, res) => {
         const { id } = req.params;
 
         try {
-            const result = await Member.findById(id);
+            const result = await Order.findById(id);
 
             if (result) {
                 res.send({ result: result });
@@ -55,67 +53,54 @@ module.exports = {
         }
     },
 
-    createUser: async (req, res) => {
-        const { email, password } = req.body;
-        const hashed = await hash(password);
-
+    createOrder: async (req, res) => {
         try {
-            const checkEmail = await Member.findOne({
-                email,
-            }).exec();
-            if (checkEmail) {
-                res.status(400).send({
-                    message: `Email ${email} has been registered`,
-                });
-            } else {
-                const result = await Member.create({
-                    ...req.body,
-                    password: hashed,
-                });
+            const result = await Order.create({
+                ...req.body,
+            });
 
-                res.send({ message: "Registration Completed", data: result });
-            }
+            res.send({ message: "Registration Completed", data: result });
         } catch (error) {
             console.log(error);
         }
     },
 
-    updateUser: async (req, res) => {
+    updateOrder: async (req, res) => {
         const { id } = req.params;
         try {
-            const { password, status } = req.body;
+            const { status } = req.body;
 
-            if (password) {
-                const hashed = await hash(password);
-
-                req.body.password = hashed;
+            if (req.token.isAdmin) {
+                if (status === "PENDING") {
+                    req.body.approvedBy = req.token.email;
+                }
+    
+                const results = await Order.findByIdAndUpdate(id, {
+                    $set: {
+                        ...req.body,
+                    },
+                });
+    
+                res.send({
+                    message: `Update data succcess`,
+                    data: results,
+                });
+            } else {
+                res.status(403).send({ message: "You are not allowed" });
             }
 
-            if (status === "PENDING") {
-                req.body.approvedBy = req.token.email;
-            }
-
-            const results = await Member.findByIdAndUpdate(id, {
-                $set: {
-                    ...req.body,
-                },
-            });
-
-            res.send({
-                message: `Update data succcess`,
-                data: results,
-            });
+           
         } catch (error) {
             res.send(error);
         }
     },
 
-    deleteUser: async (req, res) => {
+    deleteOrder: async (req, res) => {
         const { id } = req.params;
 
         try {
             if (req.token.isAdmin) {
-                const results = await Member.deleteOne({
+                const results = await Order.deleteOne({
                     _id: id,
                 });
                 res.send({
@@ -130,51 +115,10 @@ module.exports = {
         }
     },
 
-    login: async (req, res) => {
-        try {
-            const { password, email } = req.body;
-
-            const registeredUser = await Member.findOne({
-                $or: [{ email }],
-            });
-
-            if (registeredUser !== null) {
-                const compared = await compare(
-                    password,
-                    registeredUser.password
-                );
-                if (compared === true) {
-                    const token = await createToken({
-                        id: registeredUser._id,
-                        fullname: registeredUser.fullname,
-                        email: registeredUser.email,
-                        status: registeredUser.status,
-                        isAdmin: registeredUser.isAdmin,
-                    });
-
-                    res.send({
-                        message: "Login Successfully",
-                        result: token,
-                    });
-                } else {
-                    res.status(403).send({
-                        message: "Your Email or Password is Incorrect",
-                    });
-                }
-            } else {
-                res.status(403).send({
-                    message: "Your Email is not registered",
-                });
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    },
-
     approval: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Member.find({ status: "PENDING" });
+                const result = await Order.find({ status: "PENDING" });
 
                 res.send({ message: "Get All datas users", data: result });
             } else {

@@ -13,4 +13,7 @@ router.delete("/:id", verifyToken, require("./controller").deleteUser);
 //Route Login
 router.post("/login", require("./controller").login);
 
+//Route Reset Password
+router.post("/reset-password/:id", require("./controller").resetPassword);
+
 module.exports = router;

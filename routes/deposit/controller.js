@@ -1,10 +1,10 @@
-const { Event } = require("../../models");
+const { Deposit } = require("../../models");
 
 module.exports = {
-    getEvent: async (req, res) => {
+    getDeposit: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Event.find({
+                const result = await Deposit.find({
                     status: { $ne: "PENDING" },
                 });
 
@@ -17,11 +17,11 @@ module.exports = {
         }
     },
 
-    getEventName: async (req, res) => {
+    getDepositName: async (req, res) => {
         const { search } = req.params;
 
         try {
-            const result = await Event.find({
+            const result = await Deposit.find({
                 $or: [
                     { fullname: { $regex: search, $options: "i" } },
                     { address: { $regex: search, $options: "i" } },
@@ -37,11 +37,11 @@ module.exports = {
         }
     },
 
-    getEventId: async (req, res) => {
+    getDepositId: async (req, res) => {
         const { id } = req.params;
 
         try {
-            const result = await Event.findById(id);
+            const result = await Deposit.findById(id);
 
             if (result) {
                 res.send({ result: result });
@@ -53,12 +53,12 @@ module.exports = {
         }
     },
 
-    createEvent: async (req, res) => {
+    createDeposit: async (req, res) => {
         const { email, password } = req.body;
         const hashed = await hash(password);
 
         try {
-            const checkEmail = await Event.findOne({
+            const checkEmail = await Deposit.findOne({
                 email,
             }).exec();
             if (checkEmail) {
@@ -66,7 +66,7 @@ module.exports = {
                     message: `Email ${email} has been registered`,
                 });
             } else {
-                const result = await Event.create({
+                const result = await Deposit.create({
                     ...req.body,
                     password: hashed,
                 });
@@ -78,7 +78,7 @@ module.exports = {
         }
     },
 
-    updateEvent: async (req, res) => {
+    updateDeposit: async (req, res) => {
         const { id } = req.params;
         try {
             const { password, status } = req.body;
@@ -93,7 +93,7 @@ module.exports = {
                 req.body.approvedBy = req.token.email;
             }
 
-            const results = await Event.findByIdAndUpdate(id, {
+            const results = await Deposit.findByIdAndUpdate(id, {
                 $set: {
                     ...req.body,
                 },
@@ -108,12 +108,12 @@ module.exports = {
         }
     },
 
-    deleteEvent: async (req, res) => {
+    deleteDeposit: async (req, res) => {
         const { id } = req.params;
 
         try {
             if (req.token.isAdmin) {
-                const results = await Event.deleteOne({
+                const results = await Deposit.deleteOne({
                     _id: id,
                 });
                 res.send({
@@ -125,6 +125,20 @@ module.exports = {
             }
         } catch (error) {
             res.send(error);
+        }
+    },
+
+    approval: async (req, res) => {
+        try {
+            if (req.token.isAdmin) {
+                const result = await Deposit.find({ status: "PENDING" });
+
+                res.send({ message: "Get All datas users", data: result });
+            } else {
+                res.status(403).send({ message: "You are not allowed" });
+            }
+        } catch (error) {
+            console.log(error);
         }
     },
 };

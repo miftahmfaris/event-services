@@ -184,4 +184,19 @@ module.exports = {
             console.log(error);
         }
     },
+
+    resetPassword: async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const result = await Member.findById(id);
+
+            res.send({
+                message: `Delete data succcess`,
+                results: result,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
 };
