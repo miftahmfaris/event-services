@@ -43,10 +43,12 @@ module.exports = {
         const { id } = req.params;
 
         try {
-            const result = await Member.findById(id);
+            const result = await Member.findById(id).select(
+                "fullname isAdmin avatar email balance"
+            );
 
             if (result) {
-                res.send({ result: result });
+                res.send({ message: "Get Data by id", data: result });
             } else {
                 res.send(`${search} Not Found`);
             }
@@ -106,7 +108,7 @@ module.exports = {
                 data: results,
             });
         } catch (error) {
-            res.send(error);
+            console.log(error);
         }
     },
 
