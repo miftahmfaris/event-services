@@ -93,7 +93,7 @@ module.exports = {
                 req.body.password = hashed;
             }
 
-            if (status === "PENDING") {
+            if (status !== "PENDING") {
                 req.body.approvedBy = req.token.email;
             }
 

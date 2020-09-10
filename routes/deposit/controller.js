@@ -1,12 +1,13 @@
-const { Deposit } = require("../../models");
+const { Deposit, Member } = require("../../models");
 
 module.exports = {
     getDeposit: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Deposit.find({
-                    status: { $ne: "PENDING" },
-                });
+                const result = await Deposit.find().populate(
+                    "memberID",
+                    "fullname balance isAdmin email"
+                );
 
                 res.send({ message: "Get All datas users", data: result });
             } else {
@@ -54,24 +55,31 @@ module.exports = {
     },
 
     createDeposit: async (req, res) => {
-        const { email, password } = req.body;
-        const hashed = await hash(password);
-
         try {
-            const checkEmail = await Deposit.findOne({
-                email,
-            }).exec();
-            if (checkEmail) {
-                res.status(400).send({
-                    message: `Email ${email} has been registered`,
-                });
-            } else {
-                const result = await Deposit.create({
-                    ...req.body,
-                    password: hashed,
-                });
+            const member = await Member.findById(req.token.id);
 
-                res.send({ message: "Registration Completed", data: result });
+            const result = await Deposit.create({
+                ...req.body,
+                memberID: req.token.id,
+                previousBalance: member.balance,
+            });
+
+            res.send({ message: "Deposit Successfull", data: result });
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    approval: async (req, res) => {
+        try {
+            if (req.token.isAdmin) {
+                const result = await Deposit.find({
+                    status: "PENDING",
+                }).populate("memberID", "fullname email balance isAdmin");
+
+                res.send({ message: "Get All datas users", data: result });
+            } else {
+                res.status(403).send({ message: "You are not allowed" });
             }
         } catch (error) {
             console.log(error);
@@ -81,59 +89,44 @@ module.exports = {
     updateDeposit: async (req, res) => {
         const { id } = req.params;
         try {
-            const { password, status } = req.body;
+            const { status } = req.body;
 
-            if (password) {
-                const hashed = await hash(password);
-
-                req.body.password = hashed;
-            }
-
-            if (status === "PENDING") {
-                req.body.approvedBy = req.token.email;
-            }
-
-            const results = await Deposit.findByIdAndUpdate(id, {
-                $set: {
-                    ...req.body,
-                },
-            });
-
-            res.send({
-                message: `Update data succcess`,
-                data: results,
-            });
-        } catch (error) {
-            res.send(error);
-        }
-    },
-
-    deleteDeposit: async (req, res) => {
-        const { id } = req.params;
-
-        try {
             if (req.token.isAdmin) {
-                const results = await Deposit.deleteOne({
-                    _id: id,
+                if (status !== "PENDING") {
+                    req.body.approvedBy = req.token.email;
+                }
+
+                const currentDeposit = await Deposit.findById(id);
+
+                if (status === "APPROVED") {
+                    await Deposit.findByIdAndUpdate(id, {
+                        $set: {
+                            ...req.body,
+                            balance:
+                                currentDeposit.previousBalance +
+                                currentDeposit.amount,
+                        },
+                    });
+                } else if (status === "REJECTED") {
+                    await Deposit.findByIdAndUpdate(id, {
+                        $set: {
+                            ...req.body,
+                            balance: currentDeposit.previousBalance,
+                        },
+                    });
+                }
+                const finalDeposit = await Deposit.findById(id);
+
+                await Member.findByIdAndUpdate(finalDeposit.memberID, {
+                    $set: {
+                        balance: finalDeposit.balance,
+                    },
                 });
+
                 res.send({
-                    message: `Delete data succcess`,
-                    results: results,
+                    message: `Update data succcess`,
+                    data: finalDeposit,
                 });
-            } else {
-                res.status(403).send({ message: "You are not allowed" });
-            }
-        } catch (error) {
-            res.send(error);
-        }
-    },
-
-    approval: async (req, res) => {
-        try {
-            if (req.token.isAdmin) {
-                const result = await Deposit.find({ status: "PENDING" });
-
-                res.send({ message: "Get All datas users", data: result });
             } else {
                 res.status(403).send({ message: "You are not allowed" });
             }

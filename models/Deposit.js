@@ -9,17 +9,21 @@ const depositSchema = new Schema({
     previousBalance: {
         type: Number,
         allowNull: false,
-        defaultValue: 0,
+        default: 0,
     },
     amount: {
         type: Number,
         allowNull: false,
-        defaultValue: 0,
+        default: 0,
     },
     balance: {
         type: Number,
         allowNull: false,
-        defaultValue: 0,
+        default: 0,
+    },
+    status: {
+        type: String,
+        default: "PENDING",
     },
     createdBy: {
         type: String,
@@ -34,6 +38,9 @@ const depositSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now,
+    },
+    approvedBy: {
+        type: String,
     },
 });
 

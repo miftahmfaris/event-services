@@ -10,11 +10,7 @@ router.get(
     require("./controller").getDepositName
 );
 router.get("/:id", verifyToken, require("./controller").getDepositId);
-router.post("/", require("./controller").createDeposit);
+router.post("/", verifyToken, require("./controller").createDeposit);
 router.put("/:id", verifyToken, require("./controller").updateDeposit);
-router.delete("/:id", verifyToken, require("./controller").deleteDeposit);
-
-//Route Login
-router.post("/login", require("./controller").login);
 
 module.exports = router;

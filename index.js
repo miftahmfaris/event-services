@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/members", require("./routes/member"));
+app.use("/deposits", require("./routes/deposit"));
 
 app.get("*", (req, res) => {
     res.send("404 Page Not Found");
