@@ -1,6 +1,11 @@
 const { Member } = require("../../models");
-const { hash, compare } = require("../../helpers");
+const { hash, compare, mailer } = require("../../helpers");
 const { createToken } = require("../../helpers");
+const {
+    EMAIL_SENDER,
+    EMAIL_SENDER_NAME,
+    WEBSITE_URL,
+} = require("../../config");
 
 module.exports = {
     getUser: async (req, res) => {
@@ -53,6 +58,23 @@ module.exports = {
                     password: hashed,
                     createdBy: req.body.email,
                 });
+
+                let mailOptions = {
+                    from: {
+                        name: EMAIL_SENDER_NAME,
+                        address: EMAIL_SENDER,
+                    },
+                    to: [
+                        {
+                            name: "test",
+                            address: "test@gmail.com",
+                        },
+                    ],
+                    subject: "Register Complete",
+                    html: `<p>Your registration is complete, click this link for activation your account <a href="${WEBSITE_URL}/activation/${result._id}" target="_blank">link</p>`,
+                };
+
+                await mailer.textEmail()(mailOptions);
 
                 res.send({ message: "Registration Completed", data: result });
             }
@@ -220,6 +242,24 @@ module.exports = {
             }
         } catch (error) {
             res.send(error);
+        }
+    },
+
+    activation: async (req, res) => {
+        const { id } = req.params;
+        try {
+            const results = await Member.findByIdAndUpdate(id, {
+                $set: {
+                    ...req.body,
+                },
+            });
+
+            res.send({
+                message: `Activation succcess`,
+                data: results,
+            });
+        } catch (error) {
+            console.log(error);
         }
     },
 };

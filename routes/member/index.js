@@ -9,6 +9,7 @@ router.get("/sort", verifyToken, require("./controller").sortMember);
 router.get("/:id", verifyToken, require("./controller").getUserId);
 router.post("/", require("./controller").createUser);
 router.put("/:id", verifyToken, require("./controller").updateUser);
+router.put("/activation/:id", require("./controller").activation);
 router.delete("/:id", verifyToken, require("./controller").deleteUser);
 
 //Route Login

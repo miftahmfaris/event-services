@@ -11,16 +11,9 @@ const memberSchema = new Schema({
         required: true,
         unique: true,
     },
-    phone: {
-        type: String,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
-    },
-    address: {
-        type: String,
     },
     avatar: {
         type: String,
