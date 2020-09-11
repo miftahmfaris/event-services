@@ -202,7 +202,10 @@ module.exports = {
 
         try {
             const result = await Member.find({
-                $or: [{ name: { $regex: q, $options: "i" } }],
+                $or: [
+                    { fullname: { $regex: q, $options: "i" } },
+                    { email: { $regex: q, $options: "i" } },
+                ],
             });
             if (result) {
                 res.send({ data: result });

@@ -18,7 +18,7 @@ module.exports = {
             const result = await Event.findById(id);
 
             if (result) {
-                res.send({ result: result });
+                res.send({ data: result });
             } else {
                 res.send(`${search} Not Found`);
             }
