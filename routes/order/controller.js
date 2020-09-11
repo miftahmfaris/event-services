@@ -74,13 +74,13 @@ module.exports = {
                 if (status === "PENDING") {
                     req.body.approvedBy = req.token.email;
                 }
-    
+
                 const results = await Order.findByIdAndUpdate(id, {
                     $set: {
                         ...req.body,
                     },
                 });
-    
+
                 res.send({
                     message: `Update data succcess`,
                     data: results,
@@ -88,8 +88,6 @@ module.exports = {
             } else {
                 res.status(403).send({ message: "You are not allowed" });
             }
-
-           
         } catch (error) {
             res.send(error);
         }
@@ -126,6 +124,38 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
+        }
+    },
+
+    sortOrder: async (req, res) => {
+        const { by, sort } = req.query;
+
+        try {
+            const result = await Order.find().sort({ [by]: sort });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    searchOrder: async (req, res) => {
+        const { q } = req.query;
+
+        try {
+            const result = await Order.find({
+                $or: [{ name: { $regex: q, $options: "i" } }],
+            });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
+            }
+        } catch (error) {
+            res.send(error);
         }
     },
 };

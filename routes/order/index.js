@@ -4,13 +4,10 @@ const { verifyToken } = require("../../helpers");
 //Route CRUD Order
 router.get("/", verifyToken, require("./controller").getOrder);
 router.get("/approval", verifyToken, require("./controller").approval);
-router.get(
-    "/search/:search",
-    verifyToken,
-    require("./controller").getOrderName
-);
+router.get("/search", verifyToken, require("./controller").searchOrder);
+router.get("/sort", verifyToken, require("./controller").sortOrder);
 router.get("/:id", verifyToken, require("./controller").getOrderId);
-router.post("/", require("./controller").createOrder);
+router.post("/", verifyToken, require("./controller").createOrder);
 router.put("/:id", verifyToken, require("./controller").updateOrder);
 router.delete("/:id", verifyToken, require("./controller").deleteOrder);
 

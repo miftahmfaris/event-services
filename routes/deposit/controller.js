@@ -61,6 +61,7 @@ module.exports = {
                 ...req.body,
                 memberID: req.token.id,
                 previousBalance: member.balance,
+                createdBy: req.token.email,
             });
 
             res.send({ message: "Deposit Successfull", data: result });
@@ -104,6 +105,7 @@ module.exports = {
                             balance:
                                 currentDeposit.previousBalance +
                                 currentDeposit.amount,
+                            updatedBy: req.token.email,
                         },
                     });
                 } else if (status === "REJECTED") {
@@ -111,6 +113,7 @@ module.exports = {
                         $set: {
                             ...req.body,
                             balance: currentDeposit.previousBalance,
+                            updatedBy: req.token.email,
                         },
                     });
                 }
@@ -139,6 +142,7 @@ module.exports = {
             const { id } = req.params;
 
             const result = await Deposit.find({ memberID: id })
+                .sort({ createdAt: "desc" })
                 .populate("memberID", "fullname balance isAdmin email")
                 .sort({ createdAt: "desc" });
 

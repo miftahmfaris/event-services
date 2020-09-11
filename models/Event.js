@@ -6,10 +6,6 @@ const eventSchema = new Schema({
         type: String,
         required: true,
     },
-    status: {
-        type: String,
-        default: "ACTIVE",
-    },
     image: {
         type: String,
     },

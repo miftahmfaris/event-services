@@ -3,37 +3,11 @@ const { Event } = require("../../models");
 module.exports = {
     getEvent: async (req, res) => {
         try {
-            if (req.token.isAdmin) {
-                const result = await Event.find({
-                    status: { $ne: "PENDING" },
-                });
+            const result = await Event.find().sort({ createdAt: "desc" });
 
-                res.send({ message: "Get All datas users", data: result });
-            } else {
-                res.status(403).send({ message: "You are not allowed" });
-            }
+            res.send({ message: "Get All datas users", data: result });
         } catch (error) {
             console.log(error);
-        }
-    },
-
-    getEventName: async (req, res) => {
-        const { search } = req.params;
-
-        try {
-            const result = await Event.find({
-                $or: [
-                    { fullname: { $regex: search, $options: "i" } },
-                    { address: { $regex: search, $options: "i" } },
-                ],
-            });
-            if (result) {
-                res.send({ result: result });
-            } else {
-                res.send(`${search} Not Found`);
-            }
-        } catch (error) {
-            res.send(error);
         }
     },
 
@@ -54,24 +28,16 @@ module.exports = {
     },
 
     createEvent: async (req, res) => {
-        const { email, password } = req.body;
-        const hashed = await hash(password);
-
         try {
-            const checkEmail = await Event.findOne({
-                email,
-            }).exec();
-            if (checkEmail) {
-                res.status(400).send({
-                    message: `Email ${email} has been registered`,
-                });
-            } else {
+            if (req.token.isAdmin) {
                 const result = await Event.create({
                     ...req.body,
-                    password: hashed,
+                    createdBy: req.token.email,
                 });
 
-                res.send({ message: "Registration Completed", data: result });
+                res.send({ message: "Add Event Successfully", data: result });
+            } else {
+                res.status(403).send({ message: "You are not allowed" });
             }
         } catch (error) {
             console.log(error);
@@ -81,28 +47,20 @@ module.exports = {
     updateEvent: async (req, res) => {
         const { id } = req.params;
         try {
-            const { password, status } = req.body;
+            if (req.token.isAdmin) {
+                const results = await Event.findByIdAndUpdate(id, {
+                    $set: {
+                        ...req.body,
+                    },
+                });
 
-            if (password) {
-                const hashed = await hash(password);
-
-                req.body.password = hashed;
+                res.send({
+                    message: `Update data succcess`,
+                    data: results,
+                });
+            } else {
+                res.status(403).send({ message: "You are not allowed" });
             }
-
-            if (status === "PENDING") {
-                req.body.approvedBy = req.token.email;
-            }
-
-            const results = await Event.findByIdAndUpdate(id, {
-                $set: {
-                    ...req.body,
-                },
-            });
-
-            res.send({
-                message: `Update data succcess`,
-                data: results,
-            });
         } catch (error) {
             res.send(error);
         }
@@ -122,6 +80,38 @@ module.exports = {
                 });
             } else {
                 res.status(403).send({ message: "You are not allowed" });
+            }
+        } catch (error) {
+            res.send(error);
+        }
+    },
+
+    sortEvent: async (req, res) => {
+        const { by, sort } = req.query;
+
+        try {
+            const result = await Event.find().sort({ [by]: sort });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    searchEvent: async (req, res) => {
+        const { q } = req.query;
+
+        try {
+            const result = await Event.find({
+                $or: [{ name: { $regex: q, $options: "i" } }],
+            });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
             }
         } catch (error) {
             res.send(error);

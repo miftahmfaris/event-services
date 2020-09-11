@@ -4,7 +4,8 @@ const { verifyToken } = require("../../helpers");
 //Route CRUD User
 router.get("/", verifyToken, require("./controller").getUser);
 router.get("/approval", verifyToken, require("./controller").approval);
-router.get("/search/:search", verifyToken, require("./controller").getUserName);
+router.get("/search", verifyToken, require("./controller").searchMember);
+router.get("/sort", verifyToken, require("./controller").sortMember);
 router.get("/:id", verifyToken, require("./controller").getUserId);
 router.post("/", require("./controller").createUser);
 router.put("/:id", verifyToken, require("./controller").updateUser);

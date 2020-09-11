@@ -19,26 +19,6 @@ module.exports = {
         }
     },
 
-    getUserName: async (req, res) => {
-        const { search } = req.params;
-
-        try {
-            const result = await Member.find({
-                $or: [
-                    { fullname: { $regex: search, $options: "i" } },
-                    { address: { $regex: search, $options: "i" } },
-                ],
-            });
-            if (result) {
-                res.send({ result: result });
-            } else {
-                res.send(`${search} Not Found`);
-            }
-        } catch (error) {
-            res.send(error);
-        }
-    },
-
     getUserId: async (req, res) => {
         const { id } = req.params;
 
@@ -73,6 +53,7 @@ module.exports = {
                 const result = await Member.create({
                     ...req.body,
                     password: hashed,
+                    createdBy: req.body.email,
                 });
 
                 res.send({ message: "Registration Completed", data: result });
@@ -100,6 +81,7 @@ module.exports = {
             const results = await Member.findByIdAndUpdate(id, {
                 $set: {
                     ...req.body,
+                    updatedBy: req.token.email,
                 },
             });
 
@@ -199,6 +181,38 @@ module.exports = {
             });
         } catch (error) {
             console.log(error);
+        }
+    },
+
+    sortMember: async (req, res) => {
+        const { by, sort } = req.query;
+
+        try {
+            const result = await Member.find().sort({ [by]: sort });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    searchMember: async (req, res) => {
+        const { q } = req.query;
+
+        try {
+            const result = await Member.find({
+                $or: [{ name: { $regex: q, $options: "i" } }],
+            });
+            if (result) {
+                res.send({ data: result });
+            } else {
+                res.send(`${search} Not Found`);
+            }
+        } catch (error) {
+            res.send(error);
         }
     },
 };
