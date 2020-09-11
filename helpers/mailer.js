@@ -30,6 +30,9 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+console.log(GMAIL_ACCOUNT);
+console.log(GMAIL_PASSWORD);
+
 const auth = {
     auth: {
         api_key: MAILGUN_API,
