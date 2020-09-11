@@ -12,11 +12,14 @@ const orderSchema = new Schema({
     },
     ticketNumber: {
         type: String,
-        required: true,
     },
     participantStatus: {
         type: String,
         default: "PENDING",
+    },
+    paymentBy: {
+        type: String,
+        default: "DEPOSIT",
     },
     status: {
         type: String,

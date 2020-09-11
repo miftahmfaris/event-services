@@ -1,17 +1,15 @@
 const { Order } = require("../../models");
+const crypto = require("crypto-browserify");
 
 module.exports = {
     getOrder: async (req, res) => {
         try {
-            if (req.token.isAdmin) {
-                const result = await Order.find({
-                    status: { $ne: "PENDING" },
-                });
+            const result = await Order.find()
+                .populate("memberID", "_id fullname email balance")
+                .populate("eventID")
+                .sort({ createdAt: "desc" });
 
-                res.send({ message: "Get All datas users", data: result });
-            } else {
-                res.status(403).send({ message: "You are not allowed" });
-            }
+            res.send({ message: "Get All datas users", data: result });
         } catch (error) {
             console.log(error);
         }
@@ -59,7 +57,7 @@ module.exports = {
                 ...req.body,
             });
 
-            res.send({ message: "Registration Completed", data: result });
+            res.send({ message: "Order Completed", data: result });
         } catch (error) {
             console.log(error);
         }
@@ -68,16 +66,14 @@ module.exports = {
     updateOrder: async (req, res) => {
         const { id } = req.params;
         try {
-            const { status } = req.body;
+            const ticketNumber = crypto.randomBytes(4).toString("hex");
 
             if (req.token.isAdmin) {
-                if (status === "PENDING") {
-                    req.body.approvedBy = req.token.email;
-                }
-
                 const results = await Order.findByIdAndUpdate(id, {
                     $set: {
                         ...req.body,
+                        updatedBy: req.token.email,
+                        ticketNumber: ticketNumber.toUpperCase(),
                     },
                 });
 
@@ -127,11 +123,31 @@ module.exports = {
         }
     },
 
+    getOrderByMemberId: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const result = await Order.find({ memberID: id })
+                .sort({ createdAt: "desc" })
+                .populate("memberID", "fullname balance isAdmin email")
+                .populate("eventID")
+                .sort({ createdAt: "desc" });
+
+            res.send({ message: "Get All datas users", data: result });
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
     sortOrder: async (req, res) => {
         const { by, sorting } = req.query;
 
         try {
-            const result = await Order.find().sort({ [by]: sorting });
+            const result = await Order.find()
+                .populate("eventID")
+                .populate("memberID", "fullname email _id balance")
+                .sort({ [by]: sorting });
+
             if (result) {
                 res.send({ data: result });
             } else {

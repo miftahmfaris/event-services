@@ -51,6 +51,7 @@ module.exports = {
                 const results = await Event.findByIdAndUpdate(id, {
                     $set: {
                         ...req.body,
+                        updatedBy: req.token.email,
                     },
                 });
 
@@ -106,7 +107,10 @@ module.exports = {
 
         try {
             const result = await Event.find({
-                $or: [{ name: { $regex: q, $options: "i" } }],
+                $or: [
+                    { name: { $regex: q, $options: "i" } },
+                    { location: { $regex: q, $options: "i" } },
+                ],
             });
             if (result) {
                 res.send({ data: result });

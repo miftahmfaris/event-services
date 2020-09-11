@@ -10,5 +10,10 @@ router.get("/:id", verifyToken, require("./controller").getOrderId);
 router.post("/", verifyToken, require("./controller").createOrder);
 router.put("/:id", verifyToken, require("./controller").updateOrder);
 router.delete("/:id", verifyToken, require("./controller").deleteOrder);
+router.get(
+    "/member/:id",
+    verifyToken,
+    require("./controller").getOrderByMemberId
+);
 
 module.exports = router;

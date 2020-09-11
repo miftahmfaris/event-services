@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
 app.use("/deposits", require("./routes/deposit"));
 app.use("/events", require("./routes/event"));
 app.use("/members", require("./routes/member"));
+app.use("/orders", require("./routes/order"));
 
 app.get("*", (req, res) => {
     res.send("404 Page Not Found");
