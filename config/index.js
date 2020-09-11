@@ -11,6 +11,8 @@ const {
     EMAIL_SENDER,
     EMAIL_SENDER_NAME,
     WEBSITE_URL,
+    GMAIL_ACCOUNT,
+    GMAIL_PASSWORD,
 } = require("./environment");
 const db = require("./database");
 
@@ -28,4 +30,6 @@ module.exports = {
     EMAIL_SENDER,
     EMAIL_SENDER_NAME,
     WEBSITE_URL,
+    GMAIL_ACCOUNT,
+    GMAIL_PASSWORD,
 };

@@ -13,4 +13,6 @@ module.exports = {
     EMAIL_SENDER: process.env.EMAIL_SENDER,
     EMAIL_SENDER_NAME: process.env.EMAIL_SENDER_NAME,
     WEBSITE_URL: process.env.WEBSITE_URL,
+    GMAIL_ACCOUNT: process.env.GMAIL_ACCOUNT,
+    GMAIL_PASSWORD: process.env.GMAIL_PASSWORD,
 };
