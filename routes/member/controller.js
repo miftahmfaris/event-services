@@ -64,12 +64,10 @@ module.exports = {
                         name: EMAIL_SENDER_NAME,
                         address: EMAIL_SENDER,
                     },
-                    to: [
-                        {
-                            name: "test",
-                            address: "test@gmail.com",
-                        },
-                    ],
+                    to: {
+                        name: result.fullname,
+                        address: result.email,
+                    },
                     subject: "Register Complete",
                     html: `<p>Your registration is complete, click this link for activation your account <a href="${WEBSITE_URL}/activation/${result._id}" target="_blank">link</p>`,
                 };
@@ -197,13 +195,24 @@ module.exports = {
 
     resetPassword: async (req, res) => {
         const { id } = req.params;
-
         try {
-            const result = await Member.findById(id);
+            const { password } = req.body;
+
+            if (password) {
+                const hashed = await hash(password);
+
+                req.body.password = hashed;
+            }
+
+            const results = await Member.findByIdAndUpdate(id, {
+                $set: {
+                    ...req.body,
+                },
+            });
 
             res.send({
-                message: `Delete data succcess`,
-                results: result,
+                message: `Update data succcess`,
+                data: results,
             });
         } catch (error) {
             console.log(error);
@@ -257,6 +266,35 @@ module.exports = {
             res.send({
                 message: `Activation succcess`,
                 data: results,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    forgetPassword: async (req, res) => {
+        try {
+            const { email } = req.body;
+
+            const results = await Member.findOne({ email });
+
+            let mailOptions = {
+                from: {
+                    name: EMAIL_SENDER_NAME,
+                    address: EMAIL_SENDER,
+                },
+                to: {
+                    name: results.fullname,
+                    address: results.email,
+                },
+                subject: "Forget Password",
+                html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link to reset your password </p>`,
+            };
+
+            await mailer.textEmail()(mailOptions);
+
+            res.send({
+                message: `Forget Password succcess`,
             });
         } catch (error) {
             console.log(error);

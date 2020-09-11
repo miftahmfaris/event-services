@@ -3,6 +3,7 @@ require("dotenv").config();
 module.exports = {
     PORT: process.env.PORT,
     MONGODB_URI: process.env.MONGODB_URI,
+    JWT_SECRET: process.env.JWT_SECRET,
     SENDGRID_API_USER: process.env.SENDGRID_API_USER,
     SENDGRID_API_PASSWORD: process.env.SENDGRID_API_PASSWORD,
     SMTP_HOST: process.env.SMTP_HOST,

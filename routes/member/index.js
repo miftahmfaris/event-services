@@ -11,6 +11,8 @@ router.post("/", require("./controller").createUser);
 router.put("/:id", verifyToken, require("./controller").updateUser);
 router.put("/activation/:id", require("./controller").activation);
 router.delete("/:id", verifyToken, require("./controller").deleteUser);
+router.post("/forget-password", require("./controller").forgetPassword);
+router.put("/forget-password/:id", require("./controller").resetPassword);
 
 //Route Login
 router.post("/login", require("./controller").login);
