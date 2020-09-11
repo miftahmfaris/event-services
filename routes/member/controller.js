@@ -125,22 +125,28 @@ module.exports = {
                     password,
                     registeredUser.password
                 );
-                if (compared === true) {
-                    const token = await createToken({
-                        id: registeredUser._id,
-                        fullname: registeredUser.fullname,
-                        email: registeredUser.email,
-                        status: registeredUser.status,
-                        isAdmin: registeredUser.isAdmin,
-                    });
+                if (registeredUser.status === "ACTIVE") {
+                    if (compared === true) {
+                        const token = await createToken({
+                            id: registeredUser._id,
+                            fullname: registeredUser.fullname,
+                            email: registeredUser.email,
+                            status: registeredUser.status,
+                            isAdmin: registeredUser.isAdmin,
+                        });
 
-                    res.send({
-                        message: "Login Successfully",
-                        result: token,
-                    });
-                } else {
+                        res.send({
+                            message: "Login Successfully",
+                            result: token,
+                        });
+                    } else {
+                        res.status(403).send({
+                            message: "Your Email or Password is Incorrect",
+                        });
+                    }
+                } else if (registeredUser.status === "PENDING") {
                     res.status(403).send({
-                        message: "Your Email or Password is Incorrect",
+                        message: `Your account is ${registeredUser.status} please activation your account`,
                     });
                 }
             } else {
