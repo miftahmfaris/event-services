@@ -128,10 +128,10 @@ module.exports = {
     },
 
     sortOrder: async (req, res) => {
-        const { by, sort } = req.query;
+        const { by, sorting } = req.query;
 
         try {
-            const result = await Order.find().sort({ [by]: sort });
+            const result = await Order.find().sort({ [by]: sorting });
             if (result) {
                 res.send({ data: result });
             } else {

@@ -87,10 +87,10 @@ module.exports = {
     },
 
     sortEvent: async (req, res) => {
-        const { by, sort } = req.query;
+        const { by, sorting } = req.query;
 
         try {
-            const result = await Event.find().sort({ [by]: sort });
+            const result = await Event.find().sort({ [by]: sorting });
             if (result) {
                 res.send({ data: result });
             } else {

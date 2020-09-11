@@ -6,9 +6,7 @@ module.exports = {
     getUser: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Member.find({
-                    status: { $ne: "PENDING" },
-                });
+                const result = await Member.find();
 
                 res.send({ message: "Get All datas users", data: result });
             } else {
@@ -185,10 +183,10 @@ module.exports = {
     },
 
     sortMember: async (req, res) => {
-        const { by, sort } = req.query;
+        const { by, sorting } = req.query;
 
         try {
-            const result = await Member.find().sort({ [by]: sort });
+            const result = await Member.find().sort({ [by]: sorting });
             if (result) {
                 res.send({ data: result });
             } else {
