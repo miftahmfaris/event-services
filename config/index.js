@@ -2,8 +2,6 @@ const {
     PORT,
     MONGODB_URI,
     JWT_SECRET,
-    SENDGRID_API_USER,
-    SENDGRID_API_PASSWORD,
     SMTP_HOST,
     SMTP_PORT,
     SMTP_USERNAME,
@@ -13,6 +11,8 @@ const {
     WEBSITE_URL,
     GMAIL_ACCOUNT,
     GMAIL_PASSWORD,
+    MAILGUN_API,
+    MAILGUN_DOMAIN,
 } = require("./environment");
 const db = require("./database");
 
@@ -21,8 +21,6 @@ module.exports = {
     PORT,
     MONGODB_URI,
     JWT_SECRET,
-    SENDGRID_API_USER,
-    SENDGRID_API_PASSWORD,
     SMTP_HOST,
     SMTP_PORT,
     SMTP_USERNAME,
@@ -32,4 +30,6 @@ module.exports = {
     WEBSITE_URL,
     GMAIL_ACCOUNT,
     GMAIL_PASSWORD,
+    MAILGUN_API,
+    MAILGUN_DOMAIN,
 };

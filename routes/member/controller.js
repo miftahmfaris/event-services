@@ -291,7 +291,7 @@ module.exports = {
                 html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link to reset your password </p>`,
             };
 
-            await mailer.textEmail()(mailOptions);
+            await mailer.mailGun()(mailOptions);
 
             res.send({
                 message: `Forget Password succcess`,
