@@ -288,7 +288,7 @@ module.exports = {
                     address: results.email,
                 },
                 subject: "Forget Password",
-                html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link to reset your password </p>`,
+                html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link</a> to reset your password </p>`,
             };
 
             await mailer.textEmail()(mailOptions);
