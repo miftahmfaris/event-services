@@ -4,10 +4,9 @@ module.exports = {
     getDeposit: async (req, res) => {
         try {
             if (req.token.isAdmin) {
-                const result = await Deposit.find().populate(
-                    "memberID",
-                    "fullname balance isAdmin email"
-                );
+                const result = await Deposit.find()
+                    .populate("memberID", "fullname balance isAdmin email")
+                    .sort({ createdAt: "desc" });
 
                 res.send({ message: "Get All datas users", data: result });
             } else {
@@ -130,6 +129,20 @@ module.exports = {
             } else {
                 res.status(403).send({ message: "You are not allowed" });
             }
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    getDepositByMemberId: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const result = await Deposit.find({ memberID: id })
+                .populate("memberID", "fullname balance isAdmin email")
+                .sort({ createdAt: "desc" });
+
+            res.send({ message: "Get All datas users", data: result });
         } catch (error) {
             console.log(error);
         }

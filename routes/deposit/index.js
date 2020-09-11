@@ -12,5 +12,10 @@ router.get(
 router.get("/:id", verifyToken, require("./controller").getDepositId);
 router.post("/", verifyToken, require("./controller").createDeposit);
 router.put("/:id", verifyToken, require("./controller").updateDeposit);
+router.get(
+    "/member/:id",
+    verifyToken,
+    require("./controller").getDepositByMemberId
+);
 
 module.exports = router;
