@@ -278,24 +278,30 @@ module.exports = {
 
             const results = await Member.findOne({ email });
 
-            let mailOptions = {
-                from: {
-                    name: EMAIL_SENDER_NAME,
-                    address: EMAIL_SENDER,
-                },
-                to: {
-                    name: results.fullname,
-                    address: results.email,
-                },
-                subject: "Forget Password",
-                html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link</a> to reset your password </p>`,
-            };
+            if (results.status === "ACTIVE") {
+                let mailOptions = {
+                    from: {
+                        name: EMAIL_SENDER_NAME,
+                        address: EMAIL_SENDER,
+                    },
+                    to: {
+                        name: results.fullname,
+                        address: results.email,
+                    },
+                    subject: "Forget Password",
+                    html: `<p>Click this <a href="${WEBSITE_URL}/forget-password/${results._id}" target="_blank">link</a> to reset your password </p>`,
+                };
 
-            await mailer.textEmail()(mailOptions);
+                await mailer.textEmail()(mailOptions);
 
-            res.send({
-                message: `Forget Password succcess`,
-            });
+                res.send({
+                    message: `Forget Password succcess`,
+                });
+            } else {
+                res.status(403).send({
+                    message: `You are not allowed`,
+                });
+            }
         } catch (error) {
             console.log(error);
         }
