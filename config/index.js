@@ -11,6 +11,8 @@ const {
     WEBSITE_URL,
     MAILGUN_USER,
     MAILGUN_PASS,
+    GOOGLE_USER,
+    GOOGLE_PASS,
 } = require("./environment");
 const db = require("./database");
 
@@ -28,4 +30,6 @@ module.exports = {
     WEBSITE_URL,
     MAILGUN_USER,
     MAILGUN_PASS,
+    GOOGLE_USER,
+    GOOGLE_PASS,
 };

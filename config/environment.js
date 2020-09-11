@@ -13,4 +13,6 @@ module.exports = {
     WEBSITE_URL: process.env.WEBSITE_URL,
     MAILGUN_USER: process.env.MAILGUN_USER,
     MAILGUN_PASS: process.env.MAILGUN_PASS,
+    GOOGLE_USER: process.env.GOOGLE_USER,
+    GOOGLE_PASS: process.env.GOOGLE_PASS,
 };
